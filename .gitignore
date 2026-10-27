@@ -1,0 +1,37 @@
+# --- Construction (se régénère avec la commande du README) ---
+build/
+dist/
+__pycache__/
+*.pyc
+
+# Anciens outils de construction (UPX n'est plus utilisé, voir le README)
+tools/
+
+# --- Photos personnelles : aucune photo n'est publiée, seules les captures d'écran du dossier captures/
+#     et les photos modèles du dossier exemples/ (paysages dessinés par make_exemples.py) ---
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.gif
+*.webp
+*.tif
+*.tiff
+*.heic
+*.JPG
+*.JPEG
+*.PNG
+*.HEIC
+!captures/*.png
+!exemples/*.jpg
+
+# --- Données personnelles : projets de calendrier, PDF exportés, listes d'anniversaires et d'événements ---
+*.calendrier.json
+*.json
+*.pdf
+*.csv
+Calendrier.txt
+
+# --- Fichiers système ---
+Thumbs.db
+desktop.ini
