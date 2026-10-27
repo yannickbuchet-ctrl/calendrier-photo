@@ -37,18 +37,26 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-build.txt
 
-      - name: Construire l'exécutable
+      - name: Construire l'exécutable portable
         run: |
           python -m PyInstaller --clean --noconfirm "Calendrier Photo.spec"
           New-Item -ItemType Directory -Force livraison | Out-Null
           Copy-Item "dist\Calendrier Photo.exe" "livraison\$env:EXE"
 
-      - name: Mettre de côté l'exécutable (non signé)
+      - name: Construire l'installateur (Inno Setup)
+        run: |
+          choco install innosetup --no-progress -y
+          $env:CONSTRUCTION = "dossier"
+          python -m PyInstaller --clean --noconfirm "Calendrier Photo.spec"
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "installer\Calendrier Photo.iss"
+          Copy-Item "dist\Calendrier-Photo-Installation-*.exe" livraison
+
+      - name: Mettre de côté les exécutables (non signés)
         id: non-signe
         uses: actions/upload-artifact@v4
         with:
           name: non-signe
-          path: livraison/${{ env.EXE }}
+          path: livraison/*.exe
 
       - name: Signer avec SignPath
         if: env.SIGNPATH_API_TOKEN != ''
@@ -67,6 +75,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $fichier = if (Test-Path "signe\$env:EXE") { "signe\$env:EXE" } else { "livraison\$env:EXE" }
-          gh release create "$env:GITHUB_REF_NAME" "$fichier#Calendrier Photo.exe (Windows)" `
+          $dossier = if (Test-Path "signe\$env:EXE") { "signe" } else { "livraison" }
+          $installateur = (Get-ChildItem "$dossier\Calendrier-Photo-Installation-*.exe").FullName
+          gh release create "$env:GITHUB_REF_NAME" `
+            "$installateur#Installateur Calendrier Photo (Windows, recommandé)" `
+            "$dossier\$env:EXE#Calendrier Photo.exe (portable, sans installation)" `
             --title "Calendrier Photo $($env:GITHUB_REF_NAME.TrimStart('v'))" --generate-notes

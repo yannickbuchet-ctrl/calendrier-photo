@@ -61,7 +61,22 @@ Le résultat est `dist\Calendrier Photo.exe`, un seul fichier sans console. Il n
 d'autres PC, les antivirus (McAfee, Windows Defender) bloquaient les DLL compressées et l'application ne démarrait
 pas (« DLL load failed while importing QtCore »).
 
-L'icône `Calendrier Photo.ico` est générée par `python make_icon.py`.
+L'icône `Calendrier Photo.ico` est générée par `python make_icon.py`. Le nom et la version de l'exécutable
+(Propriétés → Détails) sont lus dans `calendrier.py` (`APP_NAME`, `APP_VERSION`).
+
+### Installateur
+
+L'installateur (Inno Setup 6) installe la version « en dossier » de l'application, qui n'extrait rien au
+lancement : c'est la version recommandée, la moins souvent bloquée par les antivirus.
+
+```
+$env:CONSTRUCTION = "dossier"
+python -m PyInstaller --clean --noconfirm "Calendrier Photo.spec"
+ISCC "installer\Calendrier Photo.iss"
+```
+
+Le résultat est `dist\Calendrier-Photo-Installation-1.0.exe` : installation sans droits d'administrateur,
+raccourcis dans le menu Démarrer (et sur le Bureau au choix), désinstallation par Paramètres → Applications.
 
 Les exécutables publiés sont construits par GitHub Actions (`.github/workflows/build.yml`) à partir du code de ce
 dépôt, avec les versions de `requirements-build.txt` : il suffit de pousser une étiquette `v1.1`, `v1.2`… pour
@@ -90,6 +105,7 @@ specifically requested by the user or the person installing or operating it.)*
 | `make_icon.py` | génère l'icône de l'exécutable |
 | `make_exemples.py` | génère les photos modèles du dossier `exemples/` |
 | `Calendrier Photo.spec` | recette de construction de l'exécutable (PyInstaller) |
+| `installer/Calendrier Photo.iss` | script de l'installateur (Inno Setup) |
 | `requirements-build.txt` | versions des outils de construction |
 | `.github/workflows/build.yml` | construction, signature et publication automatiques |
 | `Calendrier Photo.ico` | icône |
