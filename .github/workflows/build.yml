@@ -1,0 +1,72 @@
+# Construction de l'exécutable sur GitHub, signature par SignPath et publication.
+#
+# - Lancement manuel (onglet Actions → « Run workflow ») : construit l'exécutable, disponible dans les artefacts.
+# - Étiquette « v* » (par exemple v1.1) : construit, signe et publie l'exécutable dans une Release.
+#
+# Signature : SignPath Foundation (gratuite pour les logiciels libres). Elle s'active dès que le secret
+# SIGNPATH_API_TOKEN et la variable SIGNPATH_ORGANIZATION_ID sont renseignés dans les réglages du dépôt
+# (Settings → Secrets and variables → Actions) ; d'ici là, l'exécutable est construit sans signature.
+
+name: Construction
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # publier la Release
+
+env:
+  EXE: Calendrier-Photo.exe
+  SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+
+jobs:
+  construire:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.15"
+          allow-prereleases: true
+
+      - name: Installer les outils de construction
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-build.txt
+
+      - name: Construire l'exécutable
+        run: |
+          python -m PyInstaller --clean --noconfirm "Calendrier Photo.spec"
+          New-Item -ItemType Directory -Force livraison | Out-Null
+          Copy-Item "dist\Calendrier Photo.exe" "livraison\$env:EXE"
+
+      - name: Mettre de côté l'exécutable (non signé)
+        id: non-signe
+        uses: actions/upload-artifact@v4
+        with:
+          name: non-signe
+          path: livraison/${{ env.EXE }}
+
+      - name: Signer avec SignPath
+        if: env.SIGNPATH_API_TOKEN != ''
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: calendrier-photo
+          signing-policy-slug: release-signing
+          github-artifact-id: ${{ steps.non-signe.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signe
+
+      - name: Publier la Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $fichier = if (Test-Path "signe\$env:EXE") { "signe\$env:EXE" } else { "livraison\$env:EXE" }
+          gh release create "$env:GITHUB_REF_NAME" "$fichier#Calendrier Photo.exe (Windows)" `
+            --title "Calendrier Photo $($env:GITHUB_REF_NAME.TrimStart('v'))" --generate-notes

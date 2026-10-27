@@ -63,6 +63,25 @@ pas (« DLL load failed while importing QtCore »).
 
 L'icône `Calendrier Photo.ico` est générée par `python make_icon.py`.
 
+Les exécutables publiés sont construits par GitHub Actions (`.github/workflows/build.yml`) à partir du code de ce
+dépôt, avec les versions de `requirements-build.txt` : il suffit de pousser une étiquette `v1.1`, `v1.2`… pour
+construire, signer et publier une nouvelle Release.
+
+## Politique de signature du code
+
+Signature de code gratuite fournie par [SignPath.io](https://about.signpath.io/), certificat par
+[SignPath Foundation](https://signpath.org/).
+*(Free code signing provided by SignPath.io, certificate by SignPath Foundation.)*
+
+- **Contributeurs et relecteurs** : [Yannick Buchet](https://github.com/yannickbuchet-ctrl)
+- **Approbateur des signatures** : [Yannick Buchet](https://github.com/yannickbuchet-ctrl)
+
+Seuls les exécutables construits par GitHub Actions à partir du code public de ce dépôt sont signés.
+
+**Confidentialité** : ce programme ne transmet aucune information à d'autres systèmes en réseau, sauf demande
+expresse de l'utilisateur. *(This program will not transfer any information to other networked systems unless
+specifically requested by the user or the person installing or operating it.)*
+
 ## Fichiers
 
 | Fichier | Rôle |
@@ -71,6 +90,8 @@ L'icône `Calendrier Photo.ico` est générée par `python make_icon.py`.
 | `make_icon.py` | génère l'icône de l'exécutable |
 | `make_exemples.py` | génère les photos modèles du dossier `exemples/` |
 | `Calendrier Photo.spec` | recette de construction de l'exécutable (PyInstaller) |
+| `requirements-build.txt` | versions des outils de construction |
+| `.github/workflows/build.yml` | construction, signature et publication automatiques |
 | `Calendrier Photo.ico` | icône |
 | `captures/` | captures d'écran de ce README (illustrations générées, aucune photo réelle) |
 | `exemples/` | photos modèles pour essayer l'application (paysages dessinés) |

@@ -1,0 +1,3 @@
+# Versions utilisées pour construire l'exécutable (voir .github/workflows/build.yml)
+PySide6==6.12.0
+pyinstaller==6.22.3
