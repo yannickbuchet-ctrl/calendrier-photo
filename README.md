@@ -75,7 +75,7 @@ python -m PyInstaller --clean --noconfirm "Calendrier Photo.spec"
 ISCC "installer\Calendrier Photo.iss"
 ```
 
-Le résultat est `dist\Calendrier-Photo-Installation-1.0.exe` : installation sans droits d'administrateur,
+Le résultat est `dist\Calendrier-Photo-Installation-<version>.exe` : installation sans droits d'administrateur,
 raccourcis dans le menu Démarrer (et sur le Bureau au choix), désinstallation par Paramètres → Applications.
 
 Les exécutables publiés sont construits par GitHub Actions (`.github/workflows/build.yml`) à partir du code de ce

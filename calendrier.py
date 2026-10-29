@@ -62,8 +62,8 @@ from PySide6.QtWidgets import (
 )
 
 APP_NAME = "Calendrier Photo"
-APP_VERSION = "1.0"
-APP_DATE = "20 octobre 2026"
+APP_VERSION = "1.2"
+APP_DATE = "29 octobre 2026"
 APP_AUTHOR = "Claude Code"
 APP_AUTHOR_MODEL = "Claude Opus 5.5 (révision claude-opus-5-5)"
 APP_DIRECTOR = "Yannick Buchet"
